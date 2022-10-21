@@ -49,33 +49,28 @@ class NameResultFragment : Fragment() {
         nationalityRecyclerView = view.findViewById(R.id.recyclerViewNationality)
         textViewNationalityInfo = view.findViewById(R.id.textViewNationalityInfo)
 
-        nameSearchViewModel.getAge().observe(viewLifecycleOwner) { ageItem ->
-            if (ageItem != null) {
+        nameSearchViewModel.getResponseResult().observe(viewLifecycleOwner) { responseResult ->
+            if (responseResult != null) {
                 progressBar.visibility = View.GONE
-                val ageStr = getString(R.string.age_string)
-                textViewAge.text = String.format(ageStr, ageItem.age)
+                textViewNationalityInfo.visibility = View.VISIBLE
 
                 val headerStr = getString(R.string.your_results)
-                textViewResult.text = String.format(headerStr, ageItem.name)
-            }
-        }
+                textViewResult.text = String.format(headerStr, responseResult.age.name)
 
-        nameSearchViewModel.getGender().observe(viewLifecycleOwner) { genderItem ->
-            if (genderItem != null) {
+                val ageStr = getString(R.string.age_string)
+                textViewAge.text = String.format(ageStr, responseResult.age.age)
+
                 val genderStr = getString(R.string.gender_string)
                 textViewGender.text =
-                    String.format(genderStr, genderItem.gender, genderItem.probability)
-            }
-        }
+                    String.format(genderStr, responseResult.gender.gender, responseResult.gender.probability)
 
-        nameSearchViewModel.getNationality().observe(viewLifecycleOwner) { nationalityItem ->
-            textViewNationalityInfo.visibility = View.VISIBLE
-            val layoutManager = LinearLayoutManager(context)
-            layoutManager.orientation = LinearLayoutManager.VERTICAL
-            nationalityRecyclerView.layoutManager = layoutManager
-            nationalityRecyclerView.adapter = RecyclerViewAdapter(
-                countryList = nationalityItem.country
-            )
+                val layoutManager = LinearLayoutManager(context)
+                layoutManager.orientation = LinearLayoutManager.VERTICAL
+                nationalityRecyclerView.layoutManager = layoutManager
+                nationalityRecyclerView.adapter = RecyclerViewAdapter(
+                    countryList = responseResult.nationality.country
+                )
+            }
         }
     }
 

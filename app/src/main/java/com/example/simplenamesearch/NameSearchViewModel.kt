@@ -1,123 +1,55 @@
 package com.example.simplenamesearch
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.simplenamesearch.api.NameSearchApi
-import com.google.gson.Gson
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+
+private const val AGE_ENDPOINT = "https://api.agify.io/?name="
+private const val GENDER_ENDPOINT = "https://api.genderize.io/?name="
+private const val NATIONALITY_ENDPOINT = "https://api.nationalize.io/?name="
 
 class NameSearchViewModel : ViewModel() {
 
-    private val nameSearchApi: NameSearchApi
-    private val ageLiveData = MutableLiveData<Age>()
-    private val genderLiveData = MutableLiveData<Gender>()
-    private val nationalityLiveData = MutableLiveData<Nationality>()
+    private val responseResultLiveData = MutableLiveData<ResponseResult>()
 
-    fun setAge(age: Age) {
-        ageLiveData.value = age
+    private fun setResponseResult(responseResult: ResponseResult) {
+        responseResultLiveData.postValue(responseResult)
     }
 
-    fun getAge(): MutableLiveData<Age> {
-        return ageLiveData
+    fun getResponseResult(): MutableLiveData<ResponseResult> {
+        return responseResultLiveData
     }
 
-    fun setGender(gender: Gender) {
-        genderLiveData.value = gender
-    }
-
-    fun getGender(): MutableLiveData<Gender> {
-        return genderLiveData
-    }
-
-    fun setNationality(nationality: Nationality) {
-        nationalityLiveData.value = nationality
-    }
-
-    fun getNationality(): MutableLiveData<Nationality> {
-        return nationalityLiveData
-    }
-
-    init {
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://storage.googleapis.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        nameSearchApi = retrofit.create(NameSearchApi::class.java)
-    }
-
-    suspend fun retrieveNameInfo(name: String) = withContext(Dispatchers.IO) {
-        async {
-            fetchAgeInfo(name)
+    suspend fun retrieveNameInfo(name: String) = withContext(Dispatchers.Default) {
+        val client = HttpClient(CIO) {
+            install(JsonFeature)
         }
-        async {
-            fetchGenderInfo(name)
+        val ageEndpoint = "$AGE_ENDPOINT$name"
+        val genderEndpoint = "$GENDER_ENDPOINT$name"
+        val nationalityEndpoint = "$NATIONALITY_ENDPOINT$name"
+
+        val ageResponse = async {
+            client.get<Age>(ageEndpoint)
         }
-        async {
-            fetchNationalityInfo(name)
+        val genderResponse = async {
+            client.get<Gender>(genderEndpoint)
         }
-    }.await()
+        val nationalityResponse = async {
+            client.get<Nationality>(nationalityEndpoint)
+        }
 
-    private fun fetchAgeInfo(name: String) {
-        val ageRequest: Call<Age> = nameSearchApi.fetchAge(name)
-
-        ageRequest.enqueue(object : Callback<Age> {
-            override fun onResponse(call: Call<Age>, response: Response<Age>) {
-                val body = Gson().toJson(response.body())
-                Log.d(javaClass.simpleName, "Response received $body")
-
-                val ageResponse = Gson().fromJson(body, Age::class.java)
-                setAge(ageResponse)
-            }
-
-            override fun onFailure(call: Call<Age>, t: Throwable) {
-                Log.e(javaClass.simpleName, "Failed to fetch age. ${t.cause}")
-            }
-        })
+        setResponseResult(
+            ResponseResult.parse(
+                ageResponse.await(),
+                genderResponse.await(),
+                nationalityResponse.await()
+            )
+        )
     }
-
-    private fun fetchGenderInfo(name: String) {
-        val ageRequest: Call<Gender> = nameSearchApi.fetchGender(name)
-
-        ageRequest.enqueue(object : Callback<Gender> {
-            override fun onResponse(call: Call<Gender>, response: Response<Gender>) {
-                val body = Gson().toJson(response.body())
-                Log.d(javaClass.simpleName, "Response received $body")
-
-                val ageResponse = Gson().fromJson(body, Gender::class.java)
-                setGender(ageResponse)
-            }
-
-            override fun onFailure(call: Call<Gender>, t: Throwable) {
-                Log.e(javaClass.simpleName, "Failed to fetch gender. ${t.cause}")
-            }
-        })
-    }
-
-    private fun fetchNationalityInfo(name: String) {
-        val ageRequest: Call<Nationality> = nameSearchApi.fetchNationality(name)
-
-        ageRequest.enqueue(object : Callback<Nationality> {
-            override fun onResponse(call: Call<Nationality>, response: Response<Nationality>) {
-                val body = Gson().toJson(response.body())
-                Log.d(javaClass.simpleName, "Response received $body")
-
-                val ageResponse = Gson().fromJson(body, Nationality::class.java)
-                setNationality(ageResponse)
-            }
-
-            override fun onFailure(call: Call<Nationality>, t: Throwable) {
-                Log.e(javaClass.simpleName, "Failed to fetch nationality. ${t.cause}")
-            }
-        })
-    }
-
 }

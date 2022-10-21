@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.simplenamesearch.NameSearchViewModel
 import com.example.simplenamesearch.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -21,7 +24,8 @@ class NameSearchFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        nameSearchViewModel = ViewModelProviders.of(requireActivity())[NameSearchViewModel::class.java]
+        nameSearchViewModel =
+            ViewModelProviders.of(requireActivity())[NameSearchViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -39,9 +43,11 @@ class NameSearchFragment : Fragment() {
         submitNameButton = view.findViewById(R.id.submitNameButton)
 
         submitNameButton.setOnClickListener {
-            runBlocking {
-                launch {
-                    nameSearchViewModel.retrieveNameInfo(nameInputEditText.text.toString())
+            val name = nameInputEditText.text.toString()
+            GlobalScope.launch {
+                val dispatcher = this.coroutineContext
+                CoroutineScope(dispatcher).launch {
+                    nameSearchViewModel.retrieveNameInfo(name)
                 }
             }
 
@@ -50,6 +56,8 @@ class NameSearchFragment : Fragment() {
                 .replace(R.id.fragmentContainer, nextFrag)
                 .addToBackStack(null)
                 .commit()
+
+            nameInputEditText.text.clear()
         }
     }
 

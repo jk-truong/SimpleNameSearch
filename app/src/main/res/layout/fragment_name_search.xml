@@ -10,12 +10,15 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:hint="@string/please_enter_a_name"
+        android:autofillHints="name"
+        android:imeOptions="actionDone"
+        android:inputType="textPersonName"
 
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/submitNameButton"/>
+        app:layout_constraintBottom_toTopOf="@+id/submitNameButton" />
 
     <Button
         android:id="@+id/submitNameButton"

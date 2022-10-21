@@ -24,3 +24,24 @@ data class Country(
     @SerializedName("country_id") var countryId: String,
     @SerializedName("probability") var probability: String
 )
+
+data class ResponseResult(
+    val age: Age,
+    val gender: Gender,
+    val nationality: Nationality
+) {
+    companion object {
+        fun parse(
+            age: Age,
+            gender: Gender,
+            nationality: Nationality
+        ): ResponseResult {
+            return ResponseResult(
+                age = age,
+                gender = gender,
+                nationality = nationality
+            )
+        }
+    }
+
+}
