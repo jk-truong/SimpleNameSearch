@@ -25,8 +25,8 @@ class NameSearchViewModel : ViewModel() {
         return responseResultLiveData
     }
 
-    fun retrieveNameInfo(name: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun retrieveNameInfo(name: String, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             val client = HttpClient(CIO) {
                 install(JsonFeature)
             }
