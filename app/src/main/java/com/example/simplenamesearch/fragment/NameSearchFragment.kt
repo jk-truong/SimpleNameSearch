@@ -11,10 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.simplenamesearch.NameSearchViewModel
 import com.example.simplenamesearch.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class NameSearchFragment : Fragment() {
 
@@ -44,12 +41,7 @@ class NameSearchFragment : Fragment() {
 
         submitNameButton.setOnClickListener {
             val name = nameInputEditText.text.toString()
-            GlobalScope.launch {
-                val dispatcher = this.coroutineContext
-                CoroutineScope(dispatcher).launch {
-                    nameSearchViewModel.retrieveNameInfo(name)
-                }
-            }
+            nameSearchViewModel.retrieveNameInfo(name = name)
 
             val nextFrag = NameResultFragment()
             requireActivity().supportFragmentManager.beginTransaction()
