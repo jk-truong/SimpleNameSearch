@@ -12,4 +12,9 @@
 
     <string name="submit">Submit</string>
     <string name="please_enter_a_name">Please enter a name</string>
+    <string name="age_string">Your age is likely %s</string>
+    <string name="gender_string">Your gender is likely %s\nProbability for this gender: %s</string>
+    <string name="country_string">Country id: %s\nProbability that you are from this country: %s</string>
+    <string name="your_results">Your results for %s</string>
+    <string name="nationality_info_text">Possible countries that you\'re from</string>
 </resources>
