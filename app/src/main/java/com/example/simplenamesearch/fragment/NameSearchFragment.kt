@@ -1,4 +1,4 @@
-package com.example.simplenamesearch
+package com.example.simplenamesearch.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.example.simplenamesearch.NameSearchViewModel
+import com.example.simplenamesearch.R
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 

@@ -55,13 +55,18 @@ class NameSearchViewModel : ViewModel() {
     }
 
     suspend fun retrieveNameInfo(name: String) = withContext(Dispatchers.IO) {
-        async { fetchAgeInfo(name) }
-        async { fetchGenderInfo(name) }
-        async { fetchNationalityInfo(name) }
+        async {
+            fetchAgeInfo(name)
+        }
+        async {
+            fetchGenderInfo(name)
+        }
+        async {
+            fetchNationalityInfo(name)
+        }
     }.await()
 
     private fun fetchAgeInfo(name: String) {
-        val responseLiveData: MutableLiveData<Age> = MutableLiveData()
         val ageRequest: Call<Age> = nameSearchApi.fetchAge(name)
 
         ageRequest.enqueue(object : Callback<Age> {
@@ -70,9 +75,7 @@ class NameSearchViewModel : ViewModel() {
                 Log.d(javaClass.simpleName, "Response received $body")
 
                 val ageResponse = Gson().fromJson(body, Age::class.java)
-                responseLiveData.value = ageResponse
                 setAge(ageResponse)
-                Log.d(javaClass.simpleName, "Age livedata ${getAge().value}")
             }
 
             override fun onFailure(call: Call<Age>, t: Throwable) {
@@ -82,7 +85,6 @@ class NameSearchViewModel : ViewModel() {
     }
 
     private fun fetchGenderInfo(name: String) {
-        val responseLiveData: MutableLiveData<Gender> = MutableLiveData()
         val ageRequest: Call<Gender> = nameSearchApi.fetchGender(name)
 
         ageRequest.enqueue(object : Callback<Gender> {
@@ -91,9 +93,7 @@ class NameSearchViewModel : ViewModel() {
                 Log.d(javaClass.simpleName, "Response received $body")
 
                 val ageResponse = Gson().fromJson(body, Gender::class.java)
-                responseLiveData.value = ageResponse
                 setGender(ageResponse)
-                Log.d(javaClass.simpleName, "Age livedata ${getGender().value}")
             }
 
             override fun onFailure(call: Call<Gender>, t: Throwable) {
@@ -103,7 +103,6 @@ class NameSearchViewModel : ViewModel() {
     }
 
     private fun fetchNationalityInfo(name: String) {
-        val responseLiveData: MutableLiveData<Nationality> = MutableLiveData()
         val ageRequest: Call<Nationality> = nameSearchApi.fetchNationality(name)
 
         ageRequest.enqueue(object : Callback<Nationality> {
@@ -112,9 +111,7 @@ class NameSearchViewModel : ViewModel() {
                 Log.d(javaClass.simpleName, "Response received $body")
 
                 val ageResponse = Gson().fromJson(body, Nationality::class.java)
-                responseLiveData.value = ageResponse
                 setNationality(ageResponse)
-                Log.d(javaClass.simpleName, "Age livedata ${getNationality().value}")
             }
 
             override fun onFailure(call: Call<Nationality>, t: Throwable) {

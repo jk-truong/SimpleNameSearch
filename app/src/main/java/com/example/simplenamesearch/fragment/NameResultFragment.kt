@@ -1,23 +1,29 @@
-package com.example.simplenamesearch
+package com.example.simplenamesearch.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.simplenamesearch.Country
+import com.example.simplenamesearch.NameSearchViewModel
+import com.example.simplenamesearch.R
 
 class NameResultFragment : Fragment() {
 
+    private lateinit var progressBar: ProgressBar
     private lateinit var nameSearchViewModel: NameSearchViewModel
     private lateinit var textViewResult: TextView
     private lateinit var textViewAge: TextView
     private lateinit var textViewGender: TextView
     private lateinit var nationalityRecyclerView: RecyclerView
+    private lateinit var textViewNationalityInfo: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +42,16 @@ class NameResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        progressBar = view.findViewById(R.id.progressBar)
         textViewResult = view.findViewById(R.id.textViewResult)
         textViewAge = view.findViewById(R.id.textViewAge)
         textViewGender = view.findViewById(R.id.textViewGender)
         nationalityRecyclerView = view.findViewById(R.id.recyclerViewNationality)
+        textViewNationalityInfo = view.findViewById(R.id.textViewNationalityInfo)
 
         nameSearchViewModel.getAge().observe(viewLifecycleOwner) { ageItem ->
             if (ageItem != null) {
+                progressBar.visibility = View.GONE
                 val ageStr = getString(R.string.age_string)
                 textViewAge.text = String.format(ageStr, ageItem.age)
 
@@ -60,6 +69,7 @@ class NameResultFragment : Fragment() {
         }
 
         nameSearchViewModel.getNationality().observe(viewLifecycleOwner) { nationalityItem ->
+            textViewNationalityInfo.visibility = View.VISIBLE
             val layoutManager = LinearLayoutManager(context)
             layoutManager.orientation = LinearLayoutManager.VERTICAL
             nationalityRecyclerView.layoutManager = layoutManager
